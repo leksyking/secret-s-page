@@ -4,7 +4,11 @@ const home = (req, res) => {
     res.status(200).render('home')  
 }
 const submit = async (req, res) => {
-    res.render("submit");    
+    if (req.isAuthenticated()){
+        res.render("submit");
+    }else{
+        res.redirect("/")
+    }  
 }
 
 const secret = async (req, res) => {

@@ -1,5 +1,5 @@
 const User = require('../models/secrets')
-
+const passport = require('passport')
 
 //Get Route
 const register = (req, res) => {
@@ -11,28 +11,38 @@ const login = (req, res) => {
 
 //Post route
 const registerPost = async (req, res) => {
-    const user = await User.create(req.body)
-    res.status(201).redirect('/secret')
- }
+    // Using Passport for authentication to register users
+  User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
+    if(err) {
+      console.log(err);
+      res.send('There was an error');
+    } else {
+      passport.authenticate('local')(req, res, () => {
+        res.redirect('/secret');
+      })
+    }
+  })
+}
 const loginPost = async (req, res) => {
-    const {email, password} = req.body
-    if(!email || !password){
-      console.log("Please enter an email and Password");
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password
+  });
+  
+  req.login(user, (err)=>{
+    if(err){
+        console.log(err);
+    }else{
+        passport.authenticate("local")(req, res, ()=>{
+            res.redirect("/secret");
+        });
     }
-    const user = await User.findOne({email})
-    if(!user){
-      console.log("User doesn't exist");
-    }
-    const isPassword = user.comparePassword(password)
-    if(!isPassword){
-      console.log("Wrong Password");
-    }
-    res.status(200).redirect('/secret')
-
+  })
 }
 
 
 const logout = async (req, res) => {
+    req.logout()
     res.redirect('/auth/login')
 }
 
