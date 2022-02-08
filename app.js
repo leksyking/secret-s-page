@@ -8,6 +8,12 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const passport = require('passport')
 const MongoStore = require('connect-mongo')
+
+//Middlewares
+const errorhandlerMiddleware = require('./middleware/errorhandler')
+const notFoundMiddleware = require('./middleware/notFound')
+
+
 //connect to DB
 const connectDB = require('./db/secrets')
 
@@ -43,6 +49,9 @@ app.use(passport.session());
 //Routes
 app.use('/auth', authRouter)
 app.use('/', secretsRouter)
+
+app.use(errorhandlerMiddleware)
+app.use(notFoundMiddleware)
 
 
 const port = process.env.PORT || 3000

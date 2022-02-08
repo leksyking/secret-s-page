@@ -12,16 +12,10 @@ const login = (req, res) => {
 //Post route
 const registerPost = async (req, res) => {
     // Using Passport for authentication to register users
-  User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
-    if(err) {
-      console.log(err);
-      res.send('There was an error');
-    } else {
-      passport.authenticate('local')(req, res, () => {
-        res.redirect('/secret');
-      })
-    }
-  })
+     await  User.register(new User({username: req.body.username}), req.body.password)
+     passport.authenticate('local')(req, res, () => {
+         res.redirect('/secret');
+        })
 }
 const loginPost = async (req, res) => {
   const user = new User({
